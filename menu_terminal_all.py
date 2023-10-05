@@ -1,3 +1,5 @@
+# from get_que import get_available_users
+# import numpy as np
 import pandas as pd
 import numpy as np
 
@@ -9,6 +11,9 @@ from tkinter.filedialog import askopenfilename
 from os import system, name, getcwd, getlogin
 from shutil import rmtree
 
+# import os
+
+# import win32com.client as win32
 from win32com.client.gencache import EnsureDispatch
 
 from pathlib import Path
@@ -16,20 +21,24 @@ from pathlib import Path
 
 from unicodedata import normalize, combining
 
+# import subprocess
 from subprocess import run
 
-# -------------- Empiezan las Funciones ----------------------
+
+import tkinter as tk
+from tkinter.filedialog import askopenfilename
+
+# ----------------------------------------------------------------------------------
+# -------------- Empiezan las Funciones --------------------------------------------
+# ----------------------------------------------------------------------------------
+
 
 def clear():
-    #Clears the terminal, equivalent to the command "cls"
-
     system("cls" if name == "nt" else "clear")
+    # os.system('cls' if os.name == 'nt' else 'clear')
 
 
 def delete_chache():
-    # Gets the path for the cache for this program 
-    # and deletes it (because sometime this chache was making the programa crash
-
     actual_directory = getcwd()
 
     user_id = actual_directory.strip().split("\\")[2]
@@ -41,9 +50,67 @@ def delete_chache():
         pass
 
 
-def load_list(path):
-# Reads the path and loads the each line as item on a list called "res". On each line its asume that the format is {first_name} {last_name}
+def path_selector_rawdata():
+    clear()
+    input(
+        "\n\n\nSelect the RawData File:   \n\n\n \t\tNew Master Data for Pizarra (xx).xlsx \n\n\n\nPress ENTER to continue...     "
+    )
 
+    filename_rawdata = askopenfilename()
+
+    clear()
+    replay = str(
+        input(
+            f"\n\n\nFile Path selected: \n\n \t[[{filename_rawdata}]] \n\n\n Do you want to change it?     (y/n):                      or press ENTER to continue\n\t "
+        )
+    )
+
+    if replay == "y" or replay == "yes":
+        input(
+            "\n\n\nSelect the RawData File:   \n\n\n \t\tNew Master Data for Pizarra (xx).xlsx \n\n\n\nPress ENTER to continue...     "
+        )
+        filename_rawdata = askopenfilename()
+
+        return filename_rawdata
+
+    else:
+        return filename_rawdata
+
+
+def path_selector_schedule():
+    clear()
+    input(
+        "\n\n\nSelect the Schedule File:   \n\n\n \t\t2023 EECR Schedule R1.xlsx \n\n\n\nPress ENTER to continue...     "
+    )
+    filename_schedule = askopenfilename()
+
+    clear()
+    replay = str(
+        input(
+            f"\n\n\nFile Path selected: \n\n \t[[{filename_schedule}]] \n\n\n Do you want to change it?     (y/n):                      or press ENTER to continue\n\t "
+        )
+    )
+
+    #
+
+    if replay == "y" or replay == "yes":
+        input(
+            "\n\n\nSelect the Schedule File:   \n\n\n \t\t2022 EECR Schedule R1.xlsx \n\n\n\nPress ENTER to continue...     "
+        )
+        filename_schedule = askopenfilename()
+        return filename_schedule
+
+    else:
+        return filename_schedule
+
+
+def save_filename_rawdata(filename_rawdata):
+    f = open("./data/path_rawdata.txt", "w")
+    f.write(filename_rawdata)
+    f.close()
+
+
+def load_list(path):
     res = []
     lines = open(path, encoding="utf-8").readlines()
     for line in lines:
@@ -77,6 +144,8 @@ def encontrar_y_agregar_old(name_on_table, available_users, Que_desordenado):
         name_on_table = name_on_table.replace(" [AUTOSOL/PWS/CR]", "")
     elif " [AUTOSOL/PWS/CORI]" in name_on_table:
         name_on_table = name_on_table.replace(" [AUTOSOL/PWS/CORI]", "")
+    elif " [EMR/SYSS/PWS/GUAC]" in name_on_table:
+        name_on_table = name_on_table.replace(" [EMR/SYSS/PWS/GUAC]", "")
 
     name_on_table = remove_accents(name_on_table)
 
@@ -124,6 +193,8 @@ def encontrar_y_agregar(name_on_table, available_users, Que_desordenado):
         name_on_table = name_on_table.replace(" [AUTOSOL/PWS/CR", "")
     elif " [AUTOSOL/PWS/CORI" in name_on_table:
         name_on_table = name_on_table.replace(" [AUTOSOL/PWS/CORI", "")
+    elif " [EMR/SYSS/PWS/GUAC" in name_on_table:
+        name_on_table = name_on_table.replace(" [EMR/SYSS/PWS/GUAC", "")
 
     name_on_table = remove_accents(name_on_table)
 
@@ -136,7 +207,8 @@ def encontrar_y_agregar(name_on_table, available_users, Que_desordenado):
         db_nombres = remove_accents(
             db_usuario[1]["Nombre Completo"].split(", ")[1]
         )  # .split(" ")
-        db_apellidos = remove_accents(db_usuario[1]["Nombre Completo"].split(", ")[0])
+        db_apellidos = remove_accents(
+            db_usuario[1]["Nombre Completo"].split(", ")[0])
 
         if (apellido in db_apellidos) and (nombre_completo in db_nombres):
             split_db_nombres = db_nombres.split(" ")
@@ -227,6 +299,17 @@ def encontrar_y_agregar(name_on_table, available_users, Que_desordenado):
     return False
 
 
+def move_eladio(Que_desordenado):
+    for index, user in enumerate(Que_desordenado):
+        if "Eladio" in user:
+            aux = user
+            Que_desordenado.pop(index)
+            Que_desordenado.append(aux)
+        else:
+            pass
+    return Que_desordenado
+
+
 def check_OCWW_log(date_object):
     path = "./data/OCWW_log.txt"
     lines = open(path).readlines()
@@ -241,21 +324,40 @@ def check_OCWW_log(date_object):
     return False
 
 
-def join():
+# ----------------------------------------------------------------------------------
+# -------------- Terminan las Funciones --------------------------------------------
+# ----------------------------------------------------------------------------------
 
-    # Fase 1: read_schedule
+# ----------------------------------------------------------------------------------------------------------------------------------------
+
+# ----------------------------------------------------------------------------------
+# -------------- Se declara la funcion join() - une todo ---------------------------
+# ----------------------------------------------------------------------------------
+
+
+def join():
+    # --------------------------------------------------------------------------
+    # -------------- Fase 1: read_schedule -------------------------------------
+    # --------------------------------------------------------------------------
+
     delete_chache()
 
     current_user = remove_accents(getlogin())
+    # print(current_user)
 
+    # filename_schedule = path_selector_schedule()     # se llama la funcion para pedirle al usuario la ubicacion del archivo SCHEDULE
     filename_schedule = rf"C:\Users\{current_user}\Downloads\2023 EECR Schedule R1.xlsx"
-    filename_rawdata = (rf"C:\Users\{current_user}\Downloads\New Master Data for Pizarra.xlsx")
 
-    # Se carga el horario del site
-    df = pd.read_excel(filename_schedule, sheet_name="Calendar")  
+    # filename_rawdata = path_selector_rawdata()      # se llama la funcion para pedirle al usuario la ubicacion del archivo RAWDATA
+    filename_rawdata = (
+        rf"C:\Users\{current_user}\Downloads\New Master Data for Pizarra.xlsx"
+    )
+
+    df = pd.read_excel(
+        filename_schedule, sheet_name="Calendar"
+    )  # Se carga el horario del site
 
     clear()
-    
     print("\n\n\tReading Schedule...")
     date_object = date.today()  # Se obtiene la fecha de hoy y se crea en objeto time
     yyyy = date_object.year  # Se descompone la fecha en año, mes y dia
@@ -267,14 +369,12 @@ def join():
     # time_date_object = datetime(yyyy, 9, 16, 0, 0, 0)
     time_date_object = datetime(yyyy, mm, dd, 0, 0, 0)
 
-    # Se compara/busca en el df los que cumplen dicha fecha de hoy
     df_just_date = (
         df[df.isin([time_date_object])].stack().unstack()
-    )
-    # Se obtiene el nombre de la columna responsable del dia de hoy == colum_string
+    )  # Se compara/busca en el df los que cumplen dicha fecha de hoy
     tdy_column_string = df_just_date.columns[
         0
-    ]  
+    ]  # Se obtiene el nombre de la columna responsable del dia de hoy == colum_string
 
     get_start = load_path_txt("./data/start_table.txt")
     get_end = load_path_txt("./data/end_table.txt")
@@ -288,6 +388,7 @@ def join():
         df.index[range(finish_id, df.index.stop)]
     )  # el numero 76 se tiene que estar modificando cada vez que se agrega gente
 
+    # print(df_W_names)
     """
     print(start_id)
     print(finish_id)
@@ -298,7 +399,12 @@ def join():
     """
     # df = df.reset_index()  # make sure indexes pair with number of rows
 
-    blacklist = load_list("./data/lists/blacklist.txt") + ["Katherine  Alvarado","Jose Carlos Marin"]
+    dict_h_clasificado = {}
+
+    blacklist = load_list("./data/lists/blacklist.txt") + [
+        "Katherine  Alvarado",
+        "Jose Carlos Marin",
+    ]
 
     training_list = load_list("./data/lists/training_list.txt")
 
@@ -375,12 +481,17 @@ def join():
 
     # ----------------------------------------------------------------------------------------------
 
+    # filename1 = askopenfilename()
+    # filename1 = load_path_txt("./data/path_rawdata.txt") #f1_name = r'\data\New Master Data for Pizarra (79).xlsx'
     filename1 = filename_rawdata
 
+    # create excel object
+
+    # excel = win32.gencache.EnsureDispatch('Excel.Application')
     excel = EnsureDispatch("Excel.Application")
 
     # excel can be visible or not
-    excel.Visible = True  # False #True
+    excel.Visible = True  # False #True  # False
 
     # open workbooks
     f_path = Path.cwd()  # your path
@@ -415,18 +526,26 @@ def join():
             f"A2:U{df_raw.shape[0] + 1}"
         )
     )
- 
-    ### SE ACTUALIZA EL OCWW SI ES MARTES! Y NO ESTA EN EL LOG!!
+    # wb1_raw.Sheets(sheetname1_raw).Range(f"A2:U11").Copy(Destination = wb2_board.Sheets(sheetname2_board).Range(f"A2:U11"))
+    # day_of_week = 1
+    ###
+    ###
+    # SE ACTUALIZA EL OCWW SI ES MARTES! Y NO ESTA EN EL LOG!!
     if day_of_week == 1:
         try:
+            # print("check1.0")
             ocww_change = check_OCWW_log(date_object)
         except:
+            # print("check1.1")
             ocww_change = False
 
         if ocww_change == False:
+            # print("check2")
             ocww_cel = ["B13", "E13", "B34"]
             for cel in ocww_cel:
-                OCWW_value = wb2_board.Sheets(sheetname2_board_graphics).Range(cel)
+                # print("check3")
+                OCWW_value = wb2_board.Sheets(
+                    sheetname2_board_graphics).Range(cel)
                 suma = int(OCWW_value) + 1
                 OCWW_value.Value = suma
 
@@ -493,11 +612,15 @@ def join():
             # print(type(name_on_table), name_on_table)
             name_on_table = str(row["Unnamed: 0"])
 
-            aux = encontrar_y_agregar(name_on_table, available_users, Que_desordenado)
+            aux = encontrar_y_agregar(
+                name_on_table, available_users, Que_desordenado)
 
+    Que_desordenado = move_eladio(Que_desordenado)
 
     late_list = []
     late_position = 1
+    print(Que_desordenado)
+
     for order, user in enumerate(Que_desordenado):
         if "(late)" in user:
             full_user = user
@@ -516,12 +639,16 @@ def join():
 
     # print(f'Que_desordenado: {Que_desordenado} \n\n')
     string_que = f"{string_que} \n\nStart at 10:"
+    print("test # 5")
     for late in late_list:
         string_que = f"{string_que}\n{late}"
 
     string_que = remove_accents(string_que)
 
     clear()
+
+    # print(f'\n\n\n\n Q list: \n\n\n\n{string_que} \n')
+    # run("clip", universal_newlines=True, input=string_que)
 
     advance_support = ""
 
