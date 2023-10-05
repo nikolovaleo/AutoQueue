@@ -1,3 +1,8 @@
+pyinstaller --onedir menu_terminal_all.py
+
+
+
+// hace un solo .exe (lento)
 pyinstaller --onefile menu_terminal_all.py
 
-pyinstaller --onedir menu_terminal_all.py
+
