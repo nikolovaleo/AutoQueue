@@ -1,11 +1,3 @@
 pyinstaller --onefile menu_terminal_all.py
 
 pyinstaller --onedir menu_terminal_all.py
-
-
-pyinstaller --onedir --add-binary "C:\Users\e1426744\Miniconda3\envs\auto_list_c\Lib\site-packages\pywin32_system32\pythoncom310.dll;." menu_terminal_all.py
-
-
-conda env create -f auto_list5.yml 
-
-C:\Users\e1426744\AppData\Local\Temp

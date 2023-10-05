@@ -1,4 +1,4 @@
-name: auto_list6
+name: auto_list
 channels:
   - anaconda
   - conda-forge
@@ -85,6 +85,7 @@ dependencies:
   - msys2-conda-epoch=20160418=1
   - nest-asyncio=1.5.5=py38haa95532_0
   - numexpr=2.8.4=py38h5b0cc5e_0
+  - opencv=4.6.0=py38h104de81_2
   - openpyxl=3.0.9=pyhd3eb1b0_0
   - openssl=1.1.1s=h2bbff1b_0
   - packaging=21.3=pyhd3eb1b0_0
@@ -99,9 +100,12 @@ dependencies:
   - prompt-toolkit=3.0.20=pyhd3eb1b0_0
   - psutil=5.9.0=py38h2bbff1b_0
   - pure_eval=0.2.2=pyhd3eb1b0_0
+  - py-opencv=4.6.0=py310hbbfc1a7_0
   - pycparser=2.21=pyhd3eb1b0_0
   - pycryptodome=3.15.0=py38h2bbff1b_0
   - pygments=2.11.2=pyhd3eb1b0_0
+  - pyinstaller=4.8=py38h8cc25b3_0
+  - pyinstaller-hooks-contrib=2022.10=pyhd8ed1ab_0
   - pynacl=1.5.0=py310h8cc25b3_0
   - pyopenssl=22.0.0=pyhd3eb1b0_0
   - pyparsing=3.0.9=py38haa95532_0
@@ -143,4 +147,3 @@ dependencies:
     - numpy==1.23.5
     - onedrivesdk==2.0.1
     - pynput==1.6.8
-prefix: C:\Users\e1426744\Miniconda3\envs\auto_list
