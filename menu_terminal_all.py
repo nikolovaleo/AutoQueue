@@ -203,6 +203,10 @@ def encontrar_y_agregar(name_on_table, available_users, Que_desordenado):
 
     df_bd_names = pd.read_excel("./data/lists/names_db.xlsx")
 
+    # print("df_bd_names")
+    # print(df_bd_names)
+    # x = input("\n")
+
     for db_usuario in df_bd_names.iterrows():
         db_nombres = remove_accents(
             db_usuario[1]["Nombre Completo"].split(", ")[1]
@@ -478,6 +482,9 @@ def join():
                     senior_available.append(row["Unnamed: 2"])
 
     global_list = RO_list + M_list + L_list + nan_list
+
+    """print(global_list)
+    x = input("global list:")"""
 
     # ----------------------------------------------------------------------------------------------
 
